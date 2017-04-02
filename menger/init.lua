@@ -13,29 +13,38 @@ minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_leve
 
 local dbuf = {}
 
+-- Helper function, generates text for a region's coordinates
+
+function region_text(minp, maxp)
+  return "("..minp.x..","..minp.y..","..minp.z..") to ("..maxp.x..","..maxp.y..","..maxp.z..")"
+end
+
+-- Helper function, tests if a point is outside of the object region
+
+function outside_region(d, minp, maxp)
+  return (maxp.x < 0) or (maxp.y < 0) or (maxp.z < 0) 
+      or (minp.x > d) or (minp.y > d) or (minp.z > d)
+end
+
 -- Helper function, tests if a point is in the Menger Sponge
 
 function menger_test(d, x, y, z)
-  if (x < d) and (y < d) and (z < d) and (x >= 0) and (y >= 0) and (z >= 0) then
-    local d3 = d / 3
+  local d3 = d / 3
 
-    -- test if coords are outside of the set
-    local xOut = (x >= d3) and (x < 2 * d3)
-    local yOut = (y >= d3) and (y < 2 * d3)
-    local zOut = (z >= d3) and (z < 2 * d3)
+  -- test if coords are outside of the set
+  local xOut = (x >= d3) and (x < 2 * d3)
+  local yOut = (y >= d3) and (y < 2 * d3)
+  local zOut = (z >= d3) and (z < 2 * d3)
 
-    -- if two Cartesian values are out of range, return false
-    -- else, if d3 >= 3 recurse with d3 and modulused Cartesian values
-    -- else, return true
-    if (xOut and yOut) or (yOut and zOut) or (zOut and xOut) then
-      return false
-    elseif d3 >= 3 then
-      return menger_test(d3, x % d3, y % d3, z % d3)
-    else
-      return true
-    end
-  else
+  -- if two Cartesian values are out of range, return false
+  -- else, if d3 >= 3 recurse with d3 and modulused Cartesian values
+  -- else, return true
+  if (xOut and yOut) or (yOut and zOut) or (zOut and xOut) then
     return false
+  elseif d3 >= 3 then
+    return menger_test(d3, x % d3, y % d3, z % d3)
+  else
+    return true
   end
 end
 
@@ -44,25 +53,26 @@ end
 minetest.register_on_generated(function(minp, maxp, seed)
   local t0 = os.clock()
 
-  local x1 = maxp.x
-  local y1 = maxp.y
-  local z1 = maxp.z
-  local x0 = minp.x
-  local y0 = minp.y
-  local z0 = minp.z
-
   local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
   local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
   local data = vm:get_data(dbuf)
 
-  if (x1 < 0) or (y1 < 0) or (z1 < 0) or (x0 > menger_size) or (y0 > menger_size) or (z0 > menger_size) then
+  if outside_region(menger_size, minp, maxp) then
     if DEBUG then
-      print("Skipping ("..x0..","..y0..","..z0..") to ("..x1..","..y1..","..z1..")")
+      print("Skipping "..region_text(minp, maxp))
     end
   else
     if DEBUG then
-      print ("Placing blocks at ("..x0..","..y0..","..z0..") to ("..x1..","..y1..","..z1..")")
+      print ("Generating blocks in "..region_text(minp, maxp))
     end
+    
+    -- Iterate over fixed region for the menger sponge
+    local x1 = math.min(maxp.x, menger_size)
+    local y1 = math.min(maxp.y, menger_size)
+    local z1 = math.min(maxp.z, menger_size)
+    local x0 = math.max(minp.x, 0)
+    local y0 = math.max(minp.y, 0)
+    local z0 = math.max(minp.z, 0)
 
     for z = z0, z1 do
       for y = y0, y1 do
@@ -79,7 +89,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
   end
   
   vm:set_data(data)
-  vm:calc_lighting({x = x0, y = y0, z = z0}, {x = x1, y = y1, z = z1})
+  vm:calc_lighting(minp, maxp)
   vm:write_to_map(data)
 
   if DEBUG then
