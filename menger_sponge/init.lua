@@ -1,19 +1,19 @@
 -- Parameters
 
 local YWATER = -31000
-local menger_iteration = 9 -- min value 0, max value 10
+local fractal_iteration = 9 -- min value 0, max value 10
 local DEBUG = true
-local menger_block = minetest.get_content_id("default:stone")
+local fractal_block = minetest.get_content_id("default:stone")
 
 -- Set mapgen parameters
 
-local menger_size = math.pow(3, menger_iteration)
-local menger_origin = math.floor(0 - menger_size / 2)
+local fractal_size = math.pow(3, fractal_iteration)
+local fractal_origin = math.floor(0 - fractal_size / 2)
 minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_level = YWATER})
 
 if DEBUG then
-  print ("[menger] origin: "..menger_origin)
-  print ("[menger] size: "..menger_size)
+  print ("[menger_sponge] origin: "..fractal_origin)
+  print ("[menger_sponge] size: "..fractal_size)
 end
 
 -- Localise data buffer
@@ -64,29 +64,29 @@ minetest.register_on_generated(function(minp, maxp, seed)
   local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
   local data = vm:get_data(dbuf)
 
-  if outside_region(menger_origin, menger_size, minp, maxp) then
+  if outside_region(fractal_origin, fractal_size, minp, maxp) then
     if DEBUG then
-      print("[menger] Skipping "..region_text(minp, maxp))
+      print("[menger_sponge] Skipping "..region_text(minp, maxp))
     end
   else
     if DEBUG then
-      print ("[menger] Generating blocks in "..region_text(minp, maxp))
+      print ("[menger_sponge] Generating blocks in "..region_text(minp, maxp))
     end
     
     -- Iterate over fixed region for the menger sponge
-    local x1 = math.min(maxp.x, menger_origin + menger_size)
-    local y1 = math.min(maxp.y, menger_origin + menger_size)
-    local z1 = math.min(maxp.z, menger_origin + menger_size)
-    local x0 = math.max(minp.x, menger_origin)
-    local y0 = math.max(minp.y, menger_origin)
-    local z0 = math.max(minp.z, menger_origin)
+    local x1 = math.min(maxp.x, fractal_origin + fractal_size)
+    local y1 = math.min(maxp.y, fractal_origin + fractal_size)
+    local z1 = math.min(maxp.z, fractal_origin + fractal_size)
+    local x0 = math.max(minp.x, fractal_origin)
+    local y0 = math.max(minp.y, fractal_origin)
+    local z0 = math.max(minp.z, fractal_origin)
 
     for z = z0, z1 do
       for y = y0, y1 do
         local vi = area:index(x0, y, z)
         for x = x0, x1 do
-          if menger_test(menger_size, x - menger_origin, y - menger_origin, z - menger_origin) then
-            data[vi] = menger_block
+          if menger_test(fractal_size, x - fractal_origin, y - fractal_origin, z - fractal_origin) then
+            data[vi] = fractal_block
           end
           vi = vi + 1
         end
@@ -101,11 +101,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
   if DEBUG then
     local chugent = math.ceil((os.clock() - t0) * 1000)
-    print ("[menger] "..chugent.." ms")
+    print ("[menger_sponge] "..chugent.." ms")
   end
 end)
   
 minetest.register_on_newplayer(function(player)
-  local elevation = menger_origin + menger_size
-  player:setpos({x=menger_origin, y=elevation, z=menger_origin})
+  local elevation = fractal_origin + fractal_size
+  player:setpos({x=fractal_origin, y=elevation, z=fractal_origin})
 end)
