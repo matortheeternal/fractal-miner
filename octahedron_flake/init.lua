@@ -67,9 +67,7 @@ end
 -- Tests if a point is in the Octahedron Flake
 function octahedron_test(d0, x, y, z)
   local d1 = (d0 - 1) / 2
-  local size = d0 - 2 * math.abs(y)
-  local width = size - 2 * math.abs(z)
-  local max_x = (width - 1) / 2
+  local max_x = (d0 - 2 * math.abs(y) - 2 * math.abs(z) - 1) / 2
 
   if (math.abs(x) > max_x) then
     return false;
