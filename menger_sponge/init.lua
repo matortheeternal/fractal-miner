@@ -112,6 +112,6 @@ end)
   
 -- Player spawn point
 minetest.register_on_newplayer(function(player)
-  local elevation = fractal_origin + fractal_size
+  local elevation = fractal_origin + fractal_size + 1
   player:setpos({x=fractal_origin, y=elevation, z=fractal_origin})
 end)

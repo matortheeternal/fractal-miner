@@ -139,5 +139,5 @@ end)
   
 -- Player spawn point
 minetest.register_on_newplayer(function(player)
-  player:setpos({x=0, y=fractal_side, z=0})
+  player:setpos({x=0, y=fractal_side + 1, z=0})
 end)

@@ -214,6 +214,6 @@ end)
 -- Player spawn point
 minetest.register_on_newplayer(function(player)
   -- TODO: should generate glass platform for the player to stand on
-  local elevation = fractal_origin + fractal_size
+  local elevation = fractal_origin + fractal_size + 1
   player:setpos({x=0, y=elevation, z=0})
 end)

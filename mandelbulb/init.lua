@@ -177,7 +177,7 @@ end)
 
 -- TODO: should generate a 3x3 glass platform at elevation + 2 for player to stand on
 minetest.register_on_newplayer(function(player)
-  local elevation = fractal_origin + fractal_size
+  local elevation = fractal_origin + fractal_size + 1
   local offset = 0.06 * fractal_size
   player:setpos({x=-offset, y=elevation, z=offset})
 end)
