@@ -1,12 +1,10 @@
 -- Parameters
-
 local YWATER = -31000
 local fractal_iteration = 9 -- min value 0, max value 10
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:stone")
 
 -- Set mapgen parameters
-
 local fractal_size = math.pow(3, fractal_iteration)
 local fractal_origin = math.floor(0 - fractal_size / 2)
 minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_level = YWATER})
@@ -17,24 +15,28 @@ if DEBUG then
 end
 
 -- Localise data buffer
-
 local dbuf = {}
 
--- Helper function, generates text for a region's coordinates
 
+-- ####################################################### --
+-- HELPER FUNCTIONS --
+
+-- Generates text for a region's coordinates
 function region_text(minp, maxp)
   return "("..minp.x..","..minp.y..","..minp.z..") to ("..maxp.x..","..maxp.y..","..maxp.z..")"
 end
 
--- Helper function, tests if a point is outside of the object region
-
+-- Tests if a point is outside of the object region
 function outside_region(s, d, minp, maxp)
   return (maxp.x < s) or (maxp.y < s) or (maxp.z < s) 
       or (minp.x > s + d) or (minp.y > s + d) or (minp.z > s + d)
 end
 
--- Helper function, tests if a point is in the cantor dust
 
+-- ####################################################### --
+-- CANTOR DUST FUNCTIONS
+
+-- Tests if a point is in the cantor dust
 function dust_test(d, x, y, z)
   local d3 = d / 3
 
@@ -55,8 +57,11 @@ function dust_test(d, x, y, z)
   end
 end
 
--- On generated function
 
+-- ####################################################### --
+-- Minetest hooks
+
+-- Chunk generation function
 minetest.register_on_generated(function(minp, maxp, seed)
   local t0 = os.clock()
 
@@ -105,6 +110,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
   end
 end)
   
+-- Player spawn point
 minetest.register_on_newplayer(function(player)
   local elevation = fractal_origin + fractal_size
   player:setpos({x=fractal_origin, y=elevation, z=fractal_origin})

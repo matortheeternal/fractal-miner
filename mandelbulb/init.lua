@@ -1,5 +1,4 @@
 -- Parameters
-
 local YWATER = -31000
 local fractal_size = 512    -- max value 62000
 local base_iteration = 4    -- the iteration at which we should start placing blocks
@@ -29,7 +28,6 @@ local fractal_palette = {
 local iterations = 12 -- must not exceed palette length
 
 -- Set mapgen parameters
-
 local fractal_origin = math.floor(0 - fractal_size / 2)
 local max_iteration = base_iteration + iterations
 minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_level = YWATER})
@@ -40,20 +38,17 @@ if DEBUG then
 end
 
 -- Localise data buffer
-
 local dbuf = {}
 
 -- ####################################################### --
 -- HELPER FUNCTIONS --
 
 -- Generates text for a region's coordinates
-
 function region_text(minp, maxp)
   return "("..minp.x..","..minp.y..","..minp.z..") to ("..maxp.x..","..maxp.y..","..maxp.z..")"
 end
 
 -- Tests if a point is outside of the object region
-
 function outside_region(s, d, minp, maxp)
   return (maxp.x < s) or (maxp.y < s) or (maxp.z < s) 
       or (minp.x > s + d) or (minp.y > s + d) or (minp.z > s + d)
@@ -66,7 +61,6 @@ function vector_magnitude(v)
 end
 
 -- Adds two vectors together
-
 function vector_add(v1, v2)
   return {
     x = v1.x + v2.x,
@@ -76,14 +70,12 @@ function vector_add(v1, v2)
 end
 
 -- Gets the theta value of a vector (circular coordinates)
-
 local tiny_value = 0.0000001 -- used to avoid division by zero
 function theta(v)
   return math.acos(v.z / (vector_magnitude(v) + tiny_value))
 end
 
 -- Gets the phi value of a vector (circular coordinates)
-
 function phi(v)
   return math.atan(v.y / (v.x + tiny_value))
 end
@@ -93,7 +85,6 @@ end
 -- MANDELBULB FUNCTIONS
 
 -- Applies the mandelbulb formula to a vector
-
 function formula(v, n)
   local t = theta(v)
   local p = phi(v)
@@ -106,7 +97,6 @@ function formula(v, n)
 end
 
 -- Tests if a point is in the mandelbulb
-
 function mandelbulb_test(d, x, y, z)
   local C = {
     x = (2 * x / d) - 1,
@@ -137,7 +127,6 @@ end
 -- Minetest hooks
 
 -- On generated function
-
 minetest.register_on_generated(function(minp, maxp, seed)
   local t0 = os.clock()
 

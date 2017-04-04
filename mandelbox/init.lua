@@ -1,5 +1,4 @@
 -- Parameters
-
 local YWATER = -31000
 local fractal_size = 4096   -- max value 62000
 local base_iteration = 4    -- the iteration at which we should start placing blocks
@@ -9,7 +8,6 @@ local zoom = 4              -- how far we are zoomed into the Mandelbox
 local DEBUG = true
 
 -- Test Palette
-
 local fractal_palette = {
   minetest.get_content_id("default:stone"),
   minetest.get_content_id("wool:white"),
@@ -31,7 +29,6 @@ local fractal_palette = {
 local iterations = 14 -- must not exceed palette length
 
 -- Set mapgen parameters
-
 local fractal_origin = math.floor(0 - fractal_size / 2)
 local max_iteration = base_iteration + iterations
 local zoom_sub = zoom / 2
@@ -43,8 +40,8 @@ if DEBUG then
 end
 
 -- Localise data buffer
-
 local dbuf = {}
+
 
 -- ####################################################### --
 -- HELPER FUNCTIONS --
@@ -165,7 +162,7 @@ end
 -- ####################################################### --
 -- Minetest hooks
 
--- On generated function
+-- Chunk generation function
 minetest.register_on_generated(function(minp, maxp, seed)
   local t0 = os.clock()
 
@@ -214,8 +211,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
   end
 end)
 
--- TODO: should generate a 3x3 glass platform at elevation + 3 for player to stand on
+-- Player spawn point
 minetest.register_on_newplayer(function(player)
+  -- TODO: should generate glass platform for the player to stand on
   local elevation = fractal_origin + fractal_size
   player:setpos({x=0, y=elevation, z=0})
 end)
