@@ -12,7 +12,7 @@ The maximum fractal iteration you can use depends on the
 octahedron_size you use.  This chart shows the maximum
 iteration for several octahedron_size values.  You can
 calculate the fractal size for a given size and iteration
-using the formula on line 37.
+using the formula on line 35.
 
 | octahedron_size | fractal_iteration | fractal_size |
 |-----------------|-------------------|--------------|
