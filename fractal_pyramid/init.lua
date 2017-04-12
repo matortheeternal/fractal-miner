@@ -1,7 +1,7 @@
 -- Parameters
 local YWATER = -31000
 local pyramid_size = 7 -- use an odd value >= 3
-local fractal_iteration = 5 -- see chart
+local fractal_iteration = 8 -- see chart
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:stone")
 
