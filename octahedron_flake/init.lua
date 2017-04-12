@@ -1,6 +1,6 @@
 -- Parameters
 local YWATER = -31000
-local octahedron_size = 7 -- use an odd value >= 5
+local octahedron_size = 7 -- use an odd value >= 3
 local fractal_iteration = 7 -- see chart
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:stone")
@@ -12,10 +12,11 @@ The maximum fractal iteration you can use depends on the
 octahedron_size you use.  This chart shows the maximum
 iteration for several octahedron_size values.  You can
 calculate the fractal size for a given size and iteration
-using the formula on line 35.
+using the formula on line 36.
 
 | octahedron_size | fractal_iteration | fractal_size |
 |-----------------|-------------------|--------------|
+| 3               | 13                | 32767        |
 | 5               | 13                | 49151        |
 | 7               | 12                | 32767        |
 | 9               | 12                | 40959        |
