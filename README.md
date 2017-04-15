@@ -12,7 +12,7 @@ Each folder is a separate Minetest mod.  Copy all of the folders to your Minetes
 
 1. Create a new world in Minetest.  Do not enter the world.
 2. With the world selected, click the "Configure" button.
-3. Enable the mod for the fractal object you want to generate.
+3. Enable the mod for the fractal object you want to generate and the `fractal_helpers` mod.
 4. Click the "Play" button.
 
 ## configuration
