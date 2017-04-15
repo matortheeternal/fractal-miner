@@ -15,7 +15,7 @@ The maximum fractal iteration you can use depends on the
 cross_size you use.  This chart shows the maximum
 iteration for several cross_size values.  You can
 calculate the fractal size for a given size and iteration
-using the formula on line 35.
+using the formula on line 38.
 
 | cross_size | fractal_iteration | fractal_size |
 |------------|-------------------|--------------|
