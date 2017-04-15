@@ -6,7 +6,7 @@ A set of mods for Minetest for generating fractal worlds.
 
 ## installation
 
-Each folder is a separate Minetest mod.  Copy all of the folders to your Minetest mods folder, and activate one mod at a time.  Note that fractal_helpers is just a batch of helper functions which are used by the other mods for fractal generation.
+Each folder is a separate Minetest mod.  Copy all of the folders to your Minetest mods folder, and activate one mod at a time.  Note that `fractal_helpers` is just a batch of helper functions which are used by the other mods for fractal generation.
 
 ## usage
 
@@ -17,4 +17,4 @@ Each folder is a separate Minetest mod.  Copy all of the folders to your Minetes
 
 ## configuration
 
-You can configure how a fractal generates by editing the init.lua script associated with it.  Every fractal generation script has a Parameters section.  You can edit these parameters to change the size of the fractal, the blocks used in the fractal, or other properties depending on the fractal.
+You can configure how a fractal generates by editing the `init.lua` script associated with it.  Every fractal generation script has a Parameters section.  You can edit these parameters to change the size of the fractal, the blocks used in the fractal, or other properties depending on the fractal.
