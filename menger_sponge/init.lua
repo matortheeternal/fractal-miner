@@ -79,9 +79,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
     end
     
     -- Iterate over fixed region for the menger sponge
-    local x1 = math.min(maxp.x, fractal_origin + fractal_size)
-    local y1 = math.min(maxp.y, fractal_origin + fractal_size)
-    local z1 = math.min(maxp.z, fractal_origin + fractal_size)
+    local x1 = math.min(maxp.x, fractal_origin + fractal_size - 1)
+    local y1 = math.min(maxp.y, fractal_origin + fractal_size - 1)
+    local z1 = math.min(maxp.z, fractal_origin + fractal_size - 1)
     local x0 = math.max(minp.x, fractal_origin)
     local y0 = math.max(minp.y, fractal_origin)
     local z0 = math.max(minp.z, fractal_origin)
