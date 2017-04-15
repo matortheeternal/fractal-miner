@@ -1,3 +1,6 @@
+-- Import Helpers
+dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
+
 -- Parameters
 local YWATER = -31000
 local fractal_size = 512    -- max value 62000
@@ -39,46 +42,6 @@ end
 
 -- Localise data buffer
 local dbuf = {}
-
--- ####################################################### --
--- HELPER FUNCTIONS --
-
--- Generates text for a region's coordinates
-function region_text(minp, maxp)
-  return "("..minp.x..","..minp.y..","..minp.z..") to ("..maxp.x..","..maxp.y..","..maxp.z..")"
-end
-
--- Tests if a point is outside of the object region
-function outside_region(s, d, minp, maxp)
-  return (maxp.x < s) or (maxp.y < s) or (maxp.z < s) 
-      or (minp.x > s + d) or (minp.y > s + d) or (minp.z > s + d)
-end
-
--- Gets the magnitude of a vector
-
-function vector_magnitude(v)
-  return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
-end
-
--- Adds two vectors together
-function vector_add(v1, v2)
-  return {
-    x = v1.x + v2.x,
-    y = v1.y + v2.y,
-    z = v1.z + v2.z
-  }
-end
-
--- Gets the theta value of a vector (circular coordinates)
-local tiny_value = 0.0000001 -- used to avoid division by zero
-function theta(v)
-  return math.acos(v.z / (vector_magnitude(v) + tiny_value))
-end
-
--- Gets the phi value of a vector (circular coordinates)
-function phi(v)
-  return math.atan(v.y / (v.x + tiny_value))
-end
 
 
 -- ####################################################### --
@@ -135,26 +98,17 @@ minetest.register_on_generated(function(minp, maxp, seed)
   local data = vm:get_data(dbuf)
 
   if outside_region(fractal_origin, fractal_size, minp, maxp) then
-    if DEBUG then
-      print("[mandelbulb] Skipping "..region_text(minp, maxp))
-    end
+    debug_message(DEBUG, "[mandelbulb] Skipping "..region_text(minp, maxp))
   else
-    if DEBUG then
-      print ("[mandelbulb] Generating blocks in "..region_text(minp, maxp))
-    end
+    debug_message(DEBUG, "[mandelbulb] Generating blocks in "..region_text(minp, maxp))
     
     -- Iterate over fixed region for the cantor dust
-    local x1 = math.min(maxp.x, fractal_origin + fractal_size)
-    local y1 = math.min(maxp.y, fractal_origin + fractal_size)
-    local z1 = math.min(maxp.z, fractal_origin + fractal_size)
-    local x0 = math.max(minp.x, fractal_origin)
-    local y0 = math.max(minp.y, fractal_origin)
-    local z0 = math.max(minp.z, fractal_origin)
+    local minv, maxv = get_fractal_region(minp, maxp, fractal_origin, fractal_size)
 
-    for z = z0, z1 do
-      for y = y0, y1 do
-        local vi = area:index(x0, y, z)
-        for x = x0, x1 do
+    for z = minv.z, maxv.z do
+      for y = minv.y, maxv.y do
+        local vi = area:index(minv.x, y, z)
+        for x = minv.x, maxv.x do
           local n = mandelbulb_test(fractal_size, x - fractal_origin, y - fractal_origin, z - fractal_origin) 
           if n > -1 then
             data[vi] = fractal_palette[n + 1]

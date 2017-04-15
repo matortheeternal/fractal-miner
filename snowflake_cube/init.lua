@@ -1,14 +1,20 @@
+-- Import Helpers
+dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
+
 -- Parameters
 local YWATER = -31000
 local fractal_iteration = 5 -- min value 0, max value 10
 local DEBUG = true
-local fractal_block = minetest.get_content_id("default:snowblock")
+local fractal_block = minetest.get_content_id("default:dirt_with_snow")
+local fix_spread = true
+local fix_spread_block = minetest.get_content_id("default:dirt")
 
 -- Set mapgen parameters
 local fractal_size = math.pow(3, fractal_iteration)
 local fractal_origin = math.floor(0 - fractal_size / 2)
 minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_level = YWATER})
 
+-- Debug messages
 if DEBUG then
   print ("[snowflake_cube] origin: "..fractal_origin)
   print ("[snowflake_cube] size: "..fractal_size)
@@ -16,21 +22,6 @@ end
 
 -- Localise data buffer
 local dbuf = {}
-
-
--- ####################################################### --
--- HELPER FUNCTIONS --
-
--- Generates text for a region's coordinates
-function region_text(minp, maxp)
-  return "("..minp.x..","..minp.y..","..minp.z..") to ("..maxp.x..","..maxp.y..","..maxp.z..")"
-end
-
--- Tests if a point is outside of the object region
-function outside_region(s, d, minp, maxp)
-  return (maxp.x < s) or (maxp.y < s) or (maxp.z < s) 
-      or (minp.x > s + d) or (minp.y > s + d) or (minp.z > s + d)
-end
 
 
 -- ####################################################### --
@@ -68,26 +59,17 @@ minetest.register_on_generated(function(minp, maxp, seed)
   local data = vm:get_data(dbuf)
 
   if outside_region(fractal_origin, fractal_size, minp, maxp) then
-    if DEBUG then
-      print("[snowflake_cube] Skipping "..region_text(minp, maxp))
-    end
+    debug_message(DEBUG, "[snowflake_cube] Skipping "..region_text(minp, maxp))
   else
-    if DEBUG then
-      print ("[snowflake_cube] Generating blocks in "..region_text(minp, maxp))
-    end
+    debug_message(DEBUG, "[snowflake_cube] Generating blocks in "..region_text(minp, maxp))
     
     -- Iterate over fixed region for the snowflake cube
-    local x1 = math.min(maxp.x, fractal_origin + fractal_size - 1)
-    local y1 = math.min(maxp.y, fractal_origin + fractal_size - 1)
-    local z1 = math.min(maxp.z, fractal_origin + fractal_size - 1)
-    local x0 = math.max(minp.x, fractal_origin)
-    local y0 = math.max(minp.y, fractal_origin)
-    local z0 = math.max(minp.z, fractal_origin)
+    local minv, maxv = get_fractal_region(minp, maxp, fractal_origin, fractal_size - 1)
 
-    for z = z0, z1 do
-      for y = y0, y1 do
-        local vi = area:index(x0, y, z)
-        for x = x0, x1 do
+    for z = minv.z, maxv.z do
+      for y = minv.y, maxv.y do
+        local vi = area:index(minv.x, y, z)
+        for x = minv.x, maxv.x do
           if snowflake_test(fractal_size, x - fractal_origin, y - fractal_origin, z - fractal_origin) then
             data[vi] = fractal_block
           end
@@ -95,7 +77,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
         end
       end
     end
-
+  
+    if fix_spread then
+      fix_spreading_blocks(data, area, minv, maxv, fix_spreaD_block)
+    end
   end
   
   vm:set_data(data)
