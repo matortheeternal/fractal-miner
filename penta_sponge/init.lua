@@ -6,6 +6,7 @@ local YWATER = -31000
 local fractal_iteration = 4 -- min value 0, max value 6
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:stone")
+local hollow = false
 
 -- Set mapgen parameters
 local fractal_size = math.pow(5, fractal_iteration)
@@ -24,20 +25,28 @@ local dbuf = {}
 -- ####################################################### --
 -- PENTA SPONGE FUNCTIONS
 
+-- Tests if a component is outside of the penta sponge
+function ptc(c, d)
+  return ((c < d) or (c >= 4 * d) or ((c >= 2 * d) and (c < 3 * d))) and 1 or 0
+end
+
+-- Tests if a component is in the central 3/5 cube 
+function cct(c, d)
+  return (c >= d) and (c < 4 * d)
+end
+
 -- Tests if a point is in the Penta Sponge
 function penta_test(d, x, y, z)
   local d5 = d / 5
 
   -- test if coords are outside of the set
-  local xOut = (x < d5) or (x >= 4 * d5) or ((x >= 2 * d5) and (x < 3 * d5))
-  local yOut = (y < d5) or (y >= 4 * d5) or ((y >= 2 * d5) and (y < 3 * d5))
-  local zOut = (z < d5) or (z >= 4 * d5) or ((z >= 2 * d5) and (z < 3 * d5))
-  local score = (xOut and 1 or 0) + (yOut and 1 or 0) + (zOut and 1 or 0)
+  local score = ptc(x, d5) + ptc(y, d5) + ptc(z, d5)
+  local cube_test = hollow or not (cct(x, d5) and cct(y, d5) and cct(z, d5))
 
   -- if two or more Cartesian values are out of range, return false
-  -- else, if d3 >= 3 recurse with d5 and modulused Cartesian values
+  -- else, if d5 >= 5 recurse with d5 and modulused Cartesian values
   -- else, return true
-  if score >= 2 then
+  if (score >= 2) and cube_test then
     return false
   elseif d5 >= 5 then
     return penta_test(d5, x % d5, y % d5, z % d5)
