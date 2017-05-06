@@ -3,10 +3,10 @@ dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 
 -- Parameters
 local YWATER = -31000
-local fractal_iteration = 7 -- min value 1, max value 14
+local fractal_iteration = 5 -- min value 1, max value 14
 local DEBUG = true
 local fix_spread = true
-local fractal_block = minetest.get_content_id("default:dirt_with_grass")
+local fractal_block = minetest.get_content_id("default:dirt_with_snow")
 local fix_spread_block = minetest.get_content_id("default:dirt")
 
 -- Set mapgen parameters
@@ -55,54 +55,14 @@ function hilbert_test(d0, x, y, z)
       local zp = z > 0
       local f = (d1 - 1) / 2 + 1
       if yp then 
-        if xp then
-          -- (x,y,z) = (1,1,-3) -> (1,1,-1)
-          -- (x,y,z) = (1,2,-3) -> (1,1,0)
-          -- (x,y,z) = (2,2,-3) -> (1,0,0)
-          -- (x,y,z) = (2,2,-2) -> (0,0,0)
-          -- (x,y,z) = (3,3,-3) -> (1,-1,1)
-          -- (x,y,z) = (3,3,-2) -> (0,-1,1)
-          -- (x,y,z) = (3,3,-1) -> (-1,-1,1)
-          -- (x,y,z) -> (|z| - f, f - x, y - f)
-          return hilbert_test(d1, math.abs(z) - f, f - x, y - f)  
-        else 
-          -- (x,y,z) = (-1,1,-3) -> (-1,1,-1)
-          -- (x,y,z) = (-1,2,-3) -> (-1,1,0)
-          -- (x,y,z) = (-2,2,-3) -> (-1,0,0)
-          -- (x,y,z) = (-2,2,-2) -> (0,0,0)
-          -- (x,y,z) = (-3,3,-3) -> (-1,-1,1)
-          -- (x,y,z) = (-3,3,-2) -> (0,-1,1)
-          -- (x,y,z) = (-3,3,-1) -> (1,-1,1)
-          -- (x,y,z) -> (f - |z|, f - x, y - f)
-          return hilbert_test(d1, f - math.abs(z), f + x, y - f)
-        end
+        local q = (xp and 1 or -1)
+        return hilbert_test(d1, q * (math.abs(z) - f), f + q * (0 - x), y - f)  
       else
         if zp then
-          -- rotate around x axis twice
-          -- invert y and z
           return hilbert_test(d1, f - math.abs(x), 0 - f - y, f - z)
         else
-          if xp then
-            -- (x,y,z) = (3,-3,-3) = (1,-1,-1)
-            -- (x,y,z) = (3,-3,-2) = (1,0,-1)
-            -- (x,y,z) = (3,-3,-1) = (1,1,-1)
-            -- (x,y,z) = (3,-2,-1) = (0,1,-1)
-            -- (x,y,z) = (3,-1,-1) = (-1,1,-1)
-            -- (x,y,z) = (2,-1,-1) = (-1,1,0)
-            -- (x,y,z) = (1,-1,-1) = (-1,1,1)
-            -- (x,y,z) -> (|y| - f, f + z, f - x)
-            return hilbert_test(d1, math.abs(y) - f, f + z, f - x)
-          else
-            -- (x,y,z) = (-3,-3,-3) = (-1,-1,-1)
-            -- (x,y,z) = (-3,-3,-2) = (-1,0,-1)
-            -- (x,y,z) = (-3,-3,-1) = (-1,1,-1)
-            -- (x,y,z) = (-3,-2,-1) = (0,1,-1)
-            -- (x,y,z) = (-3,-1,-1) = (1,1,-1)
-            -- (x,y,z) = (-2,-1,-1) = (1,1,0)
-            -- (x,y,z) = (-1,-1,-1) = (1,1,1)
-            -- (x,y,z) -> (f - |y|, f + z, f - x)
-            return hilbert_test(d1, f - math.abs(y), f + z, f + x)
-          end
+          local q = (xp and 1 or -1)
+          return hilbert_test(d1, q * (math.abs(y) - f), f + z, f + q * (0 - x))
         end
       end
     end
