@@ -6,7 +6,9 @@ local YWATER = -31000
 local octahedron_size = 7 -- use an odd value >= 3
 local fractal_iteration = 7 -- see chart
 local DEBUG = true
-local fractal_block = minetest.get_content_id("default:stone")
+local fix_spread = true
+local fractal_block = minetest.get_content_id("default:dirt_with_grass")
+local fix_spread_block = minetest.get_content_id("default:dirt")
 
 --[[
 ## octahedron flake size chart
@@ -104,7 +106,10 @@ minetest.register_on_generated(function(minp, maxp, seed)
         end
       end
     end
-
+  
+    if fix_spread then
+      fix_spreading_blocks(data, area, minv, maxv, fix_spread_block)
+    end
   end
   
   vm:set_data(data)

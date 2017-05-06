@@ -79,7 +79,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
     end
   
     if fix_spread then
-      fix_spreading_blocks(data, area, minv, maxv, fix_spreaD_block)
+      fix_spreading_blocks(data, area, minv, maxv, fix_spread_block)
     end
   end
   
