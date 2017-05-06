@@ -3,7 +3,7 @@ dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 
 -- Parameters
 local YWATER = -31000
-local fractal_iteration = 1 -- min value 1, max value 14
+local fractal_iteration = 1 -- min value 1, max value 9
 local DEBUG = true
 local fix_spread = false
 local fractal_block = minetest.get_content_id("default:stone")
@@ -34,7 +34,7 @@ function base_peano_test(x, y, z)
   elseif (math.abs(x) == 0) then
     return (z % 2 == 0) or (y * z == 2)
   else 
-    return (x * z < 0) and (x * z * y == 4)
+    return (x * z < 0) and (y * z == -4)
   end
 end
 
