@@ -4,7 +4,7 @@ dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 -- Parameters
 local YWATER = -31000
 local scale = 3 -- 1 <= scale < 15
-local fractal_iteration = 7 -- max value is 15 - sphere_size
+local fractal_iteration = 7 -- max value is 15 - scale
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:sandstonebrick")
 
