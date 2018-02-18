@@ -168,6 +168,6 @@ minetest.register_on_generated(function(minp, maxp, seed)
 end)
   
 -- Player spawn point
---[[minetest.register_on_newplayer(function(player)
+minetest.register_on_newplayer(function(player)
   player:setpos({x=0, y=fractal_side + 1, z=0})
-end)]]
+end)
