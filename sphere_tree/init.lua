@@ -1,11 +1,11 @@
---[[-- Import Helpers
+-- Import Helpers
 dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 
--- Parameters
+--[[-- Parameters
 local YWATER = -31000
 local scale = 3 -- 1 <= scale < 15
-local fractal_iteration = 7 -- max value is 15 - scale
-local DEBUG = true]]
+local fractal_iteration = 7 -- max value is 15 - scale]]
+local DEBUG = true
 local fractal_block = minetest.get_content_id("default:sandstonebrick")
 
 --[[-- Constants
@@ -143,8 +143,8 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
   --[[if outside_region(fractal_origin, fractal_size, minp, maxp) then
     debug_message(DEBUG, "[cube_tree] Skipping "..region_text(minp, maxp))
-  else
-    debug_message(DEBUG, "[cube_tree] Generating blocks in "..region_text(minp, maxp))]]
+  else]]
+    debug_message(DEBUG, "[cube_tree] Generating blocks in "..region_text(minp, maxp))
     
     local spheres = {}
     list_spheres(spheres, minp, maxp, first_radius, {x=0,y=0,z=0})
