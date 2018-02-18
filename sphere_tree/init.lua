@@ -111,20 +111,24 @@ minetest.register_on_generated(function(minp, maxp, seed)
   
   local spheres = {}
   list_spheres(spheres, minp, maxp, base_size, {x=0,y=0,z=0})
-  print("[sphere_tree] " .. #spheres .. " spheres to generate")
+  if #spheres == 0 then
+    debug_message(DEBUG, "[sphere_tree] Skipping "..region_text(minp, maxp))
+  else
+    print("[sphere_tree] " .. #spheres .. " spheres to generate")
 
-  for _, sphere in ipairs(spheres) do
-    local center, radius = unpack(sphere)
-    generate_sphere(data, area, minp, maxp, center, radius, fractal_block)
-  end
+    for _, sphere in ipairs(spheres) do
+      local center, radius = unpack(sphere)
+      generate_sphere(data, area, minp, maxp, center, radius, fractal_block)
+    end
 
-  vm:set_data(data)
-  vm:calc_lighting(minp, maxp)
-  vm:write_to_map(data)
+    vm:set_data(data)
+    vm:calc_lighting(minp, maxp)
+    vm:write_to_map(data)
 
-  if DEBUG then
-    local chugent = math.ceil((os.clock() - t0) * 1000)
-    print ("[sphere_tree] "..chugent.." ms")
+    if DEBUG then
+      local chugent = math.ceil((os.clock() - t0) * 1000)
+      print ("[sphere_tree] "..chugent.." ms")
+    end
   end
 end)
   
