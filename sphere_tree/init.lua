@@ -1,15 +1,15 @@
 -- Import Helpers
 dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 
---[[-- Parameters
+-- Parameters
 local YWATER = -31000
 local scale = 3 -- 1 <= scale < 15
-local fractal_iteration = 7 -- max value is 15 - scale]]
+local fractal_iteration = 7 -- max value is 15 - scale
 local DEBUG = true
 local fractal_block = minetest.get_content_id("default:sandstonebrick")
 
---[[-- Constants
-local sqrt2i = 1.0 / math.sqrt(2)
+-- Constants
+--local sqrt2i = 1.0 / math.sqrt(2)
 
 -- Set mapgen parameters
 local sphere_size = math.pow(2, scale) - 1
@@ -24,7 +24,7 @@ minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight", water_leve
 if DEBUG then
   print ("[sphere_tree] origin: "..fractal_origin)
   print ("[sphere_tree] size: "..fractal_size)
-end]]
+end
 
 -- Localize data buffer
 local dbuf = {}
@@ -54,34 +54,36 @@ end]]
 local min_sphere_size = 2
 local first_radius = 256
 
-local function list_spheres(t, minp, maxp, radius, center, r)
-  if box_in_sphere(minp, maxp, center, radius*3) then
+local function list_spheres(t, minp, maxp, d0, center, r)
+  if box_in_sphere(minp, maxp, center, d0*1.5) then
+    local radius = d0 / 2.0
     if box_in_sphere(minp, maxp, center, radius) then
       table.insert(t, {center, radius})
     end
     local newradius = radius / 2
-    if newradius < min_sphere_size then
+    if d0 <= sphere_size then
       return
     end
-    local offset = radius*1.5
+    local d1 = (d0 + 1) / 2 - 1
+    local offset = d1 + (d1 + 1) / 2
     local influence_zone = radius*0.75 -- Influence zone of child spheres at a given direction begin at 3/4 radius in this direction
     if r ~= 1 and maxp.y >= center.y + influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x, y=center.y+offset, z=center.z}, 2) -- Top
+      list_spheres(t, minp, maxp, d1, {x=center.x, y=center.y+offset, z=center.z}, 2) -- Top
     end
     if r ~= 2 and minp.y <= center.y - influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x, y=center.y-offset, z=center.z}, 1) -- Bottom
+      list_spheres(t, minp, maxp, d1, {x=center.x, y=center.y-offset, z=center.z}, 1) -- Bottom
     end
     if r ~= 3 and maxp.x >= center.x + influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x+offset, y=center.y, z=center.z}, 4) -- East
+      list_spheres(t, minp, maxp, d1, {x=center.x+offset, y=center.y, z=center.z}, 4) -- East
     end
     if r ~= 4 and minp.x <= center.x - influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x-offset, y=center.y, z=center.z}, 3) -- West
+      list_spheres(t, minp, maxp, d1, {x=center.x-offset, y=center.y, z=center.z}, 3) -- West
     end
     if r ~= 5 and maxp.z >= center.z + influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x, y=center.y, z=center.z+offset}, 6) -- North
+      list_spheres(t, minp, maxp, d1, {x=center.x, y=center.y, z=center.z+offset}, 6) -- North
     end
     if r ~= 6 and minp.z <= center.z - influence_zone then
-      list_spheres(t, minp, maxp, newradius, {x=center.x, y=center.y, z=center.z-offset}, 5) -- South
+      list_spheres(t, minp, maxp, d1, {x=center.x, y=center.y, z=center.z-offset}, 5) -- South
     end
   end
 end
@@ -147,7 +149,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
     debug_message(DEBUG, "[cube_tree] Generating blocks in "..region_text(minp, maxp))
     
     local spheres = {}
-    list_spheres(spheres, minp, maxp, first_radius, {x=0,y=0,z=0})
+    list_spheres(spheres, minp, maxp, base_size, {x=0,y=0,z=0})
     print("[cube_tree] " .. #spheres .. " spheres to generate")
 
     for _, sphere in ipairs(spheres) do
