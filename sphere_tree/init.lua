@@ -75,22 +75,23 @@ local function list_spheres(t, minp, maxp, d0, center, r)
 end
 
 local function generate_sphere(data, a, minp, maxp, center, sphere_radius, c)
-  local xmin = math.max(math.ceil(center.x-sphere_radius), minp.x) -- Minimum and maximum X bounds of the sphere
-  local xmax = math.min(math.floor(center.x+sphere_radius), maxp.x)
-  for x = xmin, xmax do
-    local xdist = center.x - x
-    local disc_radius2 = sphere_radius^2 - xdist^2 -- Intersection between the X plane and the sphere is a disc, whose radius can be calculated using Pythagorean theorem.
+  local zmin = math.max(math.ceil(center.z-sphere_radius), minp.z) -- Minimum and maximum Z bounds of the sphere
+  local zmax = math.min(math.floor(center.z+sphere_radius), maxp.z)
+  for z = zmin, zmax do
+    local zdist = center.z - z
+    local disc_radius2 = sphere_radius^2 - zdist^2 -- Intersection between the Z plane and the sphere is a disc, whose radius can be calculated using Pythagorean theorem.
     local disc_radius = math.sqrt(disc_radius2)
     local ymin = math.max(math.ceil(center.y-disc_radius), minp.y) -- Minimum and maximum Y bounds of the disc
     local ymax = math.min(math.floor(center.y+disc_radius), maxp.y)
     for y = ymin, ymax do
       local ydist = center.y - y
-      local line_radius = math.sqrt(disc_radius2 - ydist^2) -- Intersection between the disc and the straight line at X and Y constants and Z variable is a short line between 2 Z coordiantes that are calculated using Pythagorean theorem.
-      local zmin = math.max(math.ceil(center.z-line_radius), minp.z) -- Minimum and maximum Z bounds of the line
-      local zmax = math.min(math.floor(center.z+line_radius), maxp.z)
-      for z = zmin, zmax do
-        i = a:index(x, y, z)
+      local line_radius = math.sqrt(disc_radius2 - ydist^2) -- Intersection between the disc and the straight line at Y and Z constants and X variable is a short line between 2 X coordiantes that are calculated using Pythagorean theorem.
+      local xmin = math.max(math.ceil(center.x-line_radius), minp.x) -- Minimum and maximum Z bounds of the line
+      local xmax = math.min(math.floor(center.x+line_radius), maxp.x)
+      local i = a:index(xmin, y, z)
+      for x = xmin, xmax do
         data[i] = c
+        i = i + 1
       end
     end
   end
