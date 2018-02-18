@@ -107,11 +107,11 @@ minetest.register_on_generated(function(minp, maxp, seed)
   local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
   local data = vm:get_data(dbuf)
 
-  debug_message(DEBUG, "[cube_tree] Generating blocks in "..region_text(minp, maxp))
+  debug_message(DEBUG, "[sphere_tree] Generating blocks in "..region_text(minp, maxp))
   
   local spheres = {}
   list_spheres(spheres, minp, maxp, base_size, {x=0,y=0,z=0})
-  print("[cube_tree] " .. #spheres .. " spheres to generate")
+  print("[sphere_tree] " .. #spheres .. " spheres to generate")
 
   for _, sphere in ipairs(spheres) do
     local center, radius = unpack(sphere)
