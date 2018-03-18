@@ -3,10 +3,26 @@ dofile(minetest.get_modpath("fractal_helpers").."/helpers.lua")
 
 -- Parameters
 local YWATER = -31000
-local scale = 3 -- 1 <= scale < 15
+local scale = 1 -- 1 <= scale < 15
 local fractal_iteration = 7 -- max value is 15 - scale
 local DEBUG = true
-local fractal_block = minetest.get_content_id("default:sandstonebrick")
+
+-- Test Palette
+local fractal_palette = {
+  minetest.get_content_id("wool:cyan"),
+  minetest.get_content_id("wool:blue"),
+  minetest.get_content_id("wool:green"),
+  minetest.get_content_id("wool:yellow"),
+  minetest.get_content_id("wool:orange"),
+  minetest.get_content_id("wool:red"),
+  minetest.get_content_id("wool:violet"),
+  minetest.get_content_id("wool:magenta"),
+  minetest.get_content_id("wool:pink"),
+  minetest.get_content_id("wool:white"),
+  minetest.get_content_id("wool:grey"),
+  minetest.get_content_id("wool:black"),
+  minetest.get_content_id("wool:brown")
+}
 
 -- Set mapgen parameters
 local sphere_size = math.pow(2, scale) - 1
@@ -30,15 +46,26 @@ local dbuf = {}
 -- ####################################################### --
 -- SPHERE TREE FUNCTIONS
 
+local function get_level_from_size(d)
+  local level = 0
+  while d > sphere_size do
+    d = (d + 1) / 2 - 1
+    level = level + 1
+  end
+  return level
+end
+
+local function get_block_from_radius(radius)
+  local level = get_level_from_size(radius * 2 + 1)
+  return fractal_palette[level % #fractal_palette]
+end
+
 local function box_in_sphere(minp, maxp, pos, rad)
   local x = math.min(math.max(pos.x, minp.x), maxp.x)
   local y = math.min(math.max(pos.y, minp.y), maxp.y)
   local z = math.min(math.max(pos.z, minp.z), maxp.z)
   return (x-pos.x)^2 + (y-pos.y)^2 + (z-pos.z)^2 <= rad^2
 end
-
-local min_sphere_size = 2
-local first_radius = 256
 
 local function list_spheres(t, minp, maxp, d0, center, r)
   if box_in_sphere(minp, maxp, center, d0*1.5) then
@@ -119,6 +146,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
     for _, sphere in ipairs(spheres) do
       local center, radius = unpack(sphere)
+      local fractal_block = get_block_from_radius(radius)
       generate_sphere(data, area, minp, maxp, center, radius, fractal_block)
     end
 
